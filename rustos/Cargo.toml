@@ -8,10 +8,7 @@ edition = "2018"
 
 [dependencies]
 spin = "0"
-
-[dependencies.lazy_static]
-version = "1"
-features = ["spin_no_std"]
+lazy_static = {version="1",features = ["spin_no_std"]}
 
 [profile.dev]
 panic = "abort"
@@ -21,8 +18,3 @@ panic = "abort"
 
 [build]
 target =  "os.json"
-
-[unstable]
- build-std = ["core", "compiler_builtins"]
-# build-std = ["core", "compiler_builtins", "alloc"]
-build-std-features = ["compiler-builtins-mem"]

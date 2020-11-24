@@ -8,12 +8,12 @@
 	"os": "none",
 	"linker": "rust-lld",
 	"linker-flavor": "ld.lld",
-	"pre-link-args": {
+	"pre-link-args":{
 		"ld.lld": [
 			"target/asm/head.o",
-			"-Tkernel.lds"
+			"-script=kernel.lds"
 		]
-	  },
+	},
 	"executables": true,
 	"features": "-mmx,-sse,+soft-float",
 	"disable-redzone": true,

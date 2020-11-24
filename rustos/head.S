@@ -1,8 +1,8 @@
 .section .text
 
-.globl _start
+.globl kernel_head
 
-_start:
+kernel_head:
 
 	mov	$0x10,	%ax
 	mov	%ax,	%ds

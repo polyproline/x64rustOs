@@ -24,6 +24,7 @@ pub struct ScreenBuffer(
 
 unsafe impl Sync for ScreenBuffer {}
 unsafe impl Send for ScreenBuffer {}
+
 lazy_static! {
     pub static ref Screen:RwLock<ScreenBuffer> = RwLock::new(unsafe{ScreenBuffer(
 		NonNull::new_unchecked(0xffff800000a00000 as *mut _)
@@ -60,12 +61,13 @@ impl<'a>   PutChar<'a>{
 		for (i,val) in fontp.iter().enumerate(){
 			let mut testval = 0x80;
 			unsafe{
+			let buff_line = self.buffer.0.as_mut().get_unchecked_mut(self.yPosition + i);
 				for j in 0..XCharSize{
 					if (val & testval) != 0{
-						write_volatile(self.buffer.0.as_mut().get_unchecked_mut(self.yPosition + i).get_unchecked_mut(self.xPosition+j) as &mut _,self.fontC);
+						write_volatile(buff_line.get_unchecked_mut(self.xPosition+j) as &mut _,self.fontC);
 					}else{
 						if let Some(c) = self.bkC{
-							write_volatile(self.buffer.0.as_mut().get_unchecked_mut(self.yPosition + i).get_unchecked_mut(self.xPosition+j) as &mut _,c);
+							write_volatile(buff_line.get_unchecked_mut(self.xPosition+j) as &mut _,c);
 						}
 					}
 					testval >>= 1;
@@ -83,20 +85,19 @@ impl<'a>   PutChar<'a>{
 				line -= 1;
 				self.putchar(b' ' - b' ');
 				self.xPosition += XCharSize;
-				if self.xPosition >= SCREEN_WIDTH/XCharSize{
+				if self.xPosition >= SCREEN_WIDTH{
 					self.xPosition = 0;
 					self.yPosition += YCharSize;
-					if self.yPosition >= SCREEN_HEIGHT/YCharSize{
+					if self.yPosition >= SCREEN_HEIGHT{
 						self.yPosition = 0;
 					}
 				}
-			
 			}else{
 				let c = unsafe{s.get_unchecked(count).clone()};
 				if c == b'\n'{
 					self.xPosition = 0;
 					self.yPosition += YCharSize;
-					if self.yPosition >= SCREEN_HEIGHT/YCharSize{
+					if self.yPosition >= SCREEN_HEIGHT{
 						self.yPosition = 0;
 					}
 				}else if c == 0x08{
@@ -107,22 +108,22 @@ impl<'a>   PutChar<'a>{
 					   if let Some(y) = self.yPosition.checked_sub(YCharSize){
 							y
 					   }else{
-						   SCREEN_HEIGHT / YCharSize -1
+						   (SCREEN_HEIGHT / YCharSize -1)*YCharSize
 					   };
-					   SCREEN_WIDTH/ XCharSize -1
+					   (SCREEN_WIDTH/ XCharSize -1)*XCharSize
 				   };
 				   self.putchar(b' ' - b' ');
 				}else{
 					if c == b'\t'{
 						todo!();
 					}else{
-						self.putchar(b' ' - b' ');
+						self.putchar(display_char(c));
 					}
 					self.xPosition += XCharSize;
-					if self.xPosition >= SCREEN_WIDTH/XCharSize{
+					if self.xPosition >= SCREEN_WIDTH{
 						self.xPosition = 0;
 						self.yPosition += YCharSize;
-						if self.yPosition >= SCREEN_HEIGHT/YCharSize{
+						if self.yPosition >= SCREEN_HEIGHT{
 							self.yPosition = 0;
 						}
 					}

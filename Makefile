@@ -1,5 +1,5 @@
 .PHONY: run clean
-	
+
 run: 
 	bochs -f bochsrc
 

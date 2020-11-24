@@ -9,7 +9,7 @@ loader:loader.bin
 	sudo mount ../boot.img ../disk -t vfat -o loop
 	sudo cp ./loader.bin ../disk
 	sync
-	sudo unmount ../boot.img
+	sudo umount ../boot.img
 
 loader.bin:
 	nasm loader.asm -o loader.bin
