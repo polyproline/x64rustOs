@@ -1,19 +1,15 @@
-#/***************************************************
-#		版权声明
-#
-#	本操作系统名为：MINE
-#	该操作系统未经授权不得以盈利或非盈利为目的进行开发，
-#	只允许个人学习以及公开交流使用
-#
-#	代码最终所有权及解释权归田宇所有；
-#
-#	本模块作者：	田宇
-#	EMail:		345538255@qq.com
-#
-#
-#***************************************************/
+.PHONY: boot loader clean bootloader
 
-all: boot.bin loader.bin
+bootloader:boot loader
+
+boot: boot.bin
+	dd if=./boot.bin of=../boot.img bs=512 count=1 conv=notrunc status=progress
+loader:loader.bin
+	mkdir -p ../disk
+	sudo mount ../boot.img ../disk -t vfat -o loop
+	sudo cp ./loader.bin ../disk
+	sync
+	sudo unmount ../boot.img
 
 loader.bin:
 	nasm loader.asm -o loader.bin

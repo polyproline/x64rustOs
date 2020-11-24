@@ -10,14 +10,14 @@
 	"linker-flavor": "ld.lld",
 	"pre-link-args": {
 		"ld.lld": [
-			"-T Kernel.lds",
-			"-o system",
-			"target/asm/head.o"
+			"target/asm/head.o",
+			"-Tkernel.lds"
 		]
 	  },
 	"executables": true,
 	"features": "-mmx,-sse,+soft-float",
 	"disable-redzone": true,
 	"panic-strategy": "abort",
-	"relocation-model": "static"
+	"relocation-model": "static",
+  	"code-model": "kernel"
   }

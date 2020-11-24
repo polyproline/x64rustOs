@@ -1,0 +1,1 @@
+export RUSTFLAGS="-C code-model=large"
